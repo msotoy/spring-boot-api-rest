@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>MavenWrapperDownloader.java</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <link rel="stylesheet" media="all" href="../../doc-style.css" />
+  <script src="../../doc-filelist.js"></script>
+  <script>
+    var relativeDir = "../../";
+    var thisFile = ".mvn\\wrapper\\MavenWrapperDownloader.java";
+    var defaultSidebar = true;
+  </script>
+  <script src="../../doc-script.js"></script>
+
+</head>
+<body>
+  <div id="sidebar_wrapper">
+    <div id="sidebar_switch">
+      <span class="tree">Files</span>
+      <span class="headings">Headings</span>
+    </div>
+    <div id="tree"></div>
+    <div id="headings">
+
+    </div>
+  </div>
+  <div id="sidebar-toggle"></div>
+  <div id="container">
+    <div class="background highlight"></div>
+<table cellpadding="0" cellspacing="0">
+  <tbody>
+    
+      <tr>
+        <td class="docs">
+          <h1>MavenWrapperDownloader.java</h1>
+        </td>
+        <td class="code highlight"></td>
+      </tr>
+    
+    
+      <tr>
+        <td class="docs">
+          <div class="pilwrap">
+  <a class="pilcrow" href="#section-1" id="section-1"></a>
+</div>
+<div class="dox">
+<div class="summary">
+<p>Licensed to the Apache Software Foundation (ASF) under one
+or more contributor license agreements.  See the NOTICE file
+distributed with this work for additional information
+regarding copyright ownership.  The ASF licenses this file
+to you under the Apache License, Version 2.0 (the
+&quot;License&quot;); you may not use this file except in compliance
+with the License.  You may obtain a copy of the License at</p>
+</div>
+<div class="body">
+<p>https://www.apache.org/licenses/LICENSE-2.0</p>
+<p>Unless required by applicable law or agreed to in writing,
+software distributed under the License is distributed on an
+&quot;AS IS&quot; BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+KIND, either express or implied.  See the License for the
+specific language governing permissions and limitations
+under the License.</p>
+</div>
+</div>
+
+        </td>
+        <td class="code highlight">
+          <pre class="java">
+<span class="hljs-keyword">import</span> java.io.File;
+<span class="hljs-keyword">import</span> java.io.FileInputStream;
+<span class="hljs-keyword">import</span> java.io.FileOutputStream;
+<span class="hljs-keyword">import</span> java.io.IOException;
+<span class="hljs-keyword">import</span> java.net.URL;
+<span class="hljs-keyword">import</span> java.nio.channels.Channels;
+<span class="hljs-keyword">import</span> java.nio.channels.ReadableByteChannel;
+<span class="hljs-keyword">import</span> java.util.Properties;
+
+<span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">MavenWrapperDownloader</span> </span>{
+
+</pre>
+        </td>
+      </tr>
+    
+      <tr>
+        <td class="docs">
+          <div class="pilwrap">
+  <a class="pilcrow" href="#section-2" id="section-2"></a>
+</div>
+<div class="dox">
+<div class="summary">
+<p>Default URL to download the maven-wrapper.jar from, if no 'downloadUrl' is provided.</p>
+</div>
+<div class="body">
+</div>
+</div>
+
+        </td>
+        <td class="code highlight">
+          <pre class="java">    <span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">final</span> String DEFAULT_DOWNLOAD_URL =
+            <span class="hljs-string">"https://repo.maven.apache.org/maven2/io/takari/maven-wrapper/0.4.2/maven-wrapper-0.4.2.jar"</span>;
+
+</pre>
+        </td>
+      </tr>
+    
+      <tr>
+        <td class="docs">
+          <div class="pilwrap">
+  <a class="pilcrow" href="#section-3" id="section-3"></a>
+</div>
+<div class="dox">
+<div class="summary">
+<p>Path to the maven-wrapper.properties file, which might contain a downloadUrl property to
+use instead of the default one.</p>
+</div>
+<div class="body">
+</div>
+</div>
+
+        </td>
+        <td class="code highlight">
+          <pre class="java">    <span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">final</span> String MAVEN_WRAPPER_PROPERTIES_PATH =
+            <span class="hljs-string">".mvn/wrapper/maven-wrapper.properties"</span>;
+
+</pre>
+        </td>
+      </tr>
+    
+      <tr>
+        <td class="docs">
+          <div class="pilwrap">
+  <a class="pilcrow" href="#section-4" id="section-4"></a>
+</div>
+<div class="dox">
+<div class="summary">
+<p>Path where the maven-wrapper.jar will be saved to.</p>
+</div>
+<div class="body">
+</div>
+</div>
+
+        </td>
+        <td class="code highlight">
+          <pre class="java">    <span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">final</span> String MAVEN_WRAPPER_JAR_PATH =
+            <span class="hljs-string">".mvn/wrapper/maven-wrapper.jar"</span>;
+
+</pre>
+        </td>
+      </tr>
+    
+      <tr>
+        <td class="docs">
+          <div class="pilwrap">
+  <a class="pilcrow" href="#section-5" id="section-5"></a>
+</div>
+<div class="dox">
+<div class="summary">
+<p>Name of the property which should be used to override the default download url for the wrapper.</p>
+</div>
+<div class="body">
+</div>
+</div>
+
+        </td>
+        <td class="code highlight">
+          <pre class="java">    <span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">final</span> String PROPERTY_NAME_WRAPPER_URL = <span class="hljs-string">"wrapperUrl"</span>;
+
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">main</span><span class="hljs-params">(String args[])</span> </span>{
+        System.out.println(<span class="hljs-string">"- Downloader started"</span>);
+        File baseDirectory = <span class="hljs-keyword">new</span> File(args[<span class="hljs-number">0</span>]);
+        System.out.println(<span class="hljs-string">"- Using base directory: "</span> + baseDirectory.getAbsolutePath());
+
+</pre>
+        </td>
+      </tr>
+    
+      <tr>
+        <td class="docs">
+          <div class="pilwrap">
+  <a class="pilcrow" href="#section-6" id="section-6"></a>
+</div>
+<p>If the maven-wrapper.properties exists, read it and check if it contains a custom
+wrapperUrl parameter.</p>
+
+        </td>
+        <td class="code highlight">
+          <pre class="java">        File mavenWrapperPropertyFile = <span class="hljs-keyword">new</span> File(baseDirectory, MAVEN_WRAPPER_PROPERTIES_PATH);
+        String url = DEFAULT_DOWNLOAD_URL;
+        <span class="hljs-keyword">if</span> (mavenWrapperPropertyFile.exists()) {
+            FileInputStream mavenWrapperPropertyFileInputStream = <span class="hljs-keyword">null</span>;
+            <span class="hljs-keyword">try</span> {
+                mavenWrapperPropertyFileInputStream = <span class="hljs-keyword">new</span> FileInputStream(mavenWrapperPropertyFile);
+                Properties mavenWrapperProperties = <span class="hljs-keyword">new</span> Properties();
+                mavenWrapperProperties.load(mavenWrapperPropertyFileInputStream);
+                url = mavenWrapperProperties.getProperty(PROPERTY_NAME_WRAPPER_URL, url);
+            } <span class="hljs-keyword">catch</span> (IOException e) {
+                System.out.println(<span class="hljs-string">"- ERROR loading '"</span> + MAVEN_WRAPPER_PROPERTIES_PATH + <span class="hljs-string">"'"</span>);
+            } <span class="hljs-keyword">finally</span> {
+                <span class="hljs-keyword">try</span> {
+                    <span class="hljs-keyword">if</span> (mavenWrapperPropertyFileInputStream != <span class="hljs-keyword">null</span>) {
+                        mavenWrapperPropertyFileInputStream.close();
+                    }
+                } <span class="hljs-keyword">catch</span> (IOException e) {
+</pre>
+        </td>
+      </tr>
+    
+      <tr>
+        <td class="docs">
+          <div class="pilwrap">
+  <a class="pilcrow" href="#section-7" id="section-7"></a>
+</div>
+<p>Ignore ...</p>
+
+        </td>
+        <td class="code highlight">
+          <pre class="java">                }
+            }
+        }
+        System.out.println(<span class="hljs-string">"- Downloading from: : "</span> + url);
+
+        File outputFile = <span class="hljs-keyword">new</span> File(baseDirectory.getAbsolutePath(), MAVEN_WRAPPER_JAR_PATH);
+        <span class="hljs-keyword">if</span> (!outputFile.getParentFile().exists()) {
+            <span class="hljs-keyword">if</span> (!outputFile.getParentFile().mkdirs()) {
+                System.out.println(
+                        <span class="hljs-string">"- ERROR creating output direcrory '"</span> + outputFile.getParentFile().getAbsolutePath() + <span class="hljs-string">"'"</span>);
+            }
+        }
+        System.out.println(<span class="hljs-string">"- Downloading to: "</span> + outputFile.getAbsolutePath());
+        <span class="hljs-keyword">try</span> {
+            downloadFileFromURL(url, outputFile);
+            System.out.println(<span class="hljs-string">"Done"</span>);
+            System.exit(<span class="hljs-number">0</span>);
+        } <span class="hljs-keyword">catch</span> (Throwable e) {
+            System.out.println(<span class="hljs-string">"- Error downloading"</span>);
+            e.printStackTrace();
+            System.exit(<span class="hljs-number">1</span>);
+        }
+    }
+
+    <span class="hljs-function"><span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">downloadFileFromURL</span><span class="hljs-params">(String urlString, File destination)</span> <span class="hljs-keyword">throws</span> Exception </span>{
+        URL website = <span class="hljs-keyword">new</span> URL(urlString);
+        ReadableByteChannel rbc;
+        rbc = Channels.newChannel(website.openStream());
+        FileOutputStream fos = <span class="hljs-keyword">new</span> FileOutputStream(destination);
+        fos.getChannel().transferFrom(rbc, <span class="hljs-number">0</span>, Long.MAX_VALUE);
+        fos.close();
+        rbc.close();
+    }
+
+}
+
+</pre>
+        </td>
+      </tr>
+    
+  </tbody>
+</table>
+
+  </div>
+</body>
+</html>

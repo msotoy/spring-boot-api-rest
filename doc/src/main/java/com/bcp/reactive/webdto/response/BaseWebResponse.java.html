@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>BaseWebResponse.java</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <link rel="stylesheet" media="all" href="../../../../../../../../doc-style.css" />
+  <script src="../../../../../../../../doc-filelist.js"></script>
+  <script>
+    var relativeDir = "../../../../../../../../";
+    var thisFile = "src\\main\\java\\com\\bcp\\reactive\\webdto\\response\\BaseWebResponse.java";
+    var defaultSidebar = true;
+  </script>
+  <script src="../../../../../../../../doc-script.js"></script>
+
+</head>
+<body>
+  <div id="sidebar_wrapper">
+    <div id="sidebar_switch">
+      <span class="tree">Files</span>
+      <span class="headings">Headings</span>
+    </div>
+    <div id="tree"></div>
+    <div id="headings">
+
+    </div>
+  </div>
+  <div id="sidebar-toggle"></div>
+  <div id="container">
+    <div class="background highlight"></div>
+<table cellpadding="0" cellspacing="0">
+  <tbody>
+    
+      <tr>
+        <td class="docs">
+          <h1>BaseWebResponse.java</h1>
+        </td>
+        <td class="code highlight"></td>
+      </tr>
+    
+    
+      <tr>
+        <td class="docs">
+          <div class="pilwrap">
+  <a class="pilcrow" href="#section-1" id="section-1"></a>
+</div>
+
+        </td>
+        <td class="code highlight">
+          <pre class="java"><span class="hljs-keyword">package</span> com.bcp.reactive.webdto.response;
+
+<span class="hljs-keyword">import</span> com.bcp.reactive.exception.ErrorCode;
+
+<span class="hljs-keyword">import</span> lombok.Builder;
+<span class="hljs-keyword">import</span> lombok.Getter;
+
+<span class="hljs-meta">@Getter</span>
+<span class="hljs-meta">@Builder</span>
+<span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">BaseWebResponse</span>&lt;<span class="hljs-title">T</span>&gt; </span>{
+    <span class="hljs-keyword">private</span> ErrorCode errorCode;
+    <span class="hljs-keyword">private</span> T data;
+
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> BaseWebResponse <span class="hljs-title">successNoData</span><span class="hljs-params">()</span> </span>{
+        <span class="hljs-keyword">return</span> BaseWebResponse.builder()
+                .build();
+    }
+
+    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> &lt;T&gt; <span class="hljs-function">BaseWebResponse&lt;T&gt; <span class="hljs-title">successWithData</span><span class="hljs-params">(T data)</span> </span>{
+        <span class="hljs-keyword">return</span> BaseWebResponse.&lt;T&gt;builder()
+                .data(data)
+                .build();
+    }
+
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> BaseWebResponse <span class="hljs-title">error</span><span class="hljs-params">(ErrorCode errorCode)</span> </span>{
+        <span class="hljs-keyword">return</span> BaseWebResponse.builder()
+                .errorCode(errorCode)
+                .build();
+    }
+}
+
+</pre>
+        </td>
+      </tr>
+    
+  </tbody>
+</table>
+
+  </div>
+</body>
+</html>

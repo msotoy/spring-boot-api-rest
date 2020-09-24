@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>MonedaServiceImpl.java</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <link rel="stylesheet" media="all" href="../../../../../../../../doc-style.css" />
+  <script src="../../../../../../../../doc-filelist.js"></script>
+  <script>
+    var relativeDir = "../../../../../../../../";
+    var thisFile = "src\\main\\java\\com\\bcp\\reactive\\service\\moneda\\MonedaServiceImpl.java";
+    var defaultSidebar = true;
+  </script>
+  <script src="../../../../../../../../doc-script.js"></script>
+
+</head>
+<body>
+  <div id="sidebar_wrapper">
+    <div id="sidebar_switch">
+      <span class="tree">Files</span>
+      <span class="headings">Headings</span>
+    </div>
+    <div id="tree"></div>
+    <div id="headings">
+
+    </div>
+  </div>
+  <div id="sidebar-toggle"></div>
+  <div id="container">
+    <div class="background highlight"></div>
+<table cellpadding="0" cellspacing="0">
+  <tbody>
+    
+      <tr>
+        <td class="docs">
+          <h1>MonedaServiceImpl.java</h1>
+        </td>
+        <td class="code highlight"></td>
+      </tr>
+    
+    
+      <tr>
+        <td class="docs">
+          <div class="pilwrap">
+  <a class="pilcrow" href="#section-1" id="section-1"></a>
+</div>
+
+        </td>
+        <td class="code highlight">
+          <pre class="java"><span class="hljs-keyword">package</span> com.bcp.reactive.service.moneda;
+
+<span class="hljs-keyword">import</span> io.reactivex.Completable;
+<span class="hljs-keyword">import</span> io.reactivex.Single;
+<span class="hljs-keyword">import</span> org.springframework.beans.BeanUtils;
+<span class="hljs-keyword">import</span> org.springframework.beans.factory.annotation.Autowired;
+<span class="hljs-keyword">import</span> org.springframework.data.domain.PageRequest;
+<span class="hljs-keyword">import</span> org.springframework.stereotype.Service;
+
+<span class="hljs-keyword">import</span> com.bcp.reactive.entity.Moneda;
+<span class="hljs-keyword">import</span> com.bcp.reactive.repository.MonedaRepository;
+<span class="hljs-keyword">import</span> com.bcp.reactive.servicedto.request.AddMonedaRequest;
+<span class="hljs-keyword">import</span> com.bcp.reactive.servicedto.request.UpdateMonedaRequest;
+<span class="hljs-keyword">import</span> com.bcp.reactive.servicedto.response.MonedaResponse;
+
+<span class="hljs-keyword">import</span> javax.persistence.EntityNotFoundException;
+<span class="hljs-keyword">import</span> java.util.List;
+<span class="hljs-keyword">import</span> java.util.Optional;
+<span class="hljs-keyword">import</span> java.util.stream.Collectors;
+
+<span class="hljs-meta">@Service</span>
+<span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">MonedaServiceImpl</span> <span class="hljs-keyword">implements</span> <span class="hljs-title">MonedaService</span> </span>{
+
+    <span class="hljs-meta">@Autowired</span>
+    <span class="hljs-keyword">private</span> MonedaRepository monedaRepository;
+
+    <span class="hljs-meta">@Override</span>
+    <span class="hljs-function"><span class="hljs-keyword">public</span> Single&lt;String&gt; <span class="hljs-title">addMoneda</span><span class="hljs-params">(AddMonedaRequest addMonedaRequest)</span> </span>{
+        <span class="hljs-keyword">return</span> saveMonedaToRepository(addMonedaRequest);
+    }
+
+    <span class="hljs-function"><span class="hljs-keyword">private</span> Single&lt;String&gt; <span class="hljs-title">saveMonedaToRepository</span><span class="hljs-params">(AddMonedaRequest addMonedaRequest)</span> </span>{
+        <span class="hljs-keyword">return</span> Single.create(singleSubscriber -&gt; {
+            Optional&lt;Moneda&gt; optionalMoneda = monedaRepository.findById(addMonedaRequest.getCodigo());
+            <span class="hljs-keyword">if</span> (optionalMoneda.isPresent())
+                singleSubscriber.onError(<span class="hljs-keyword">new</span> EntityNotFoundException());
+            <span class="hljs-keyword">else</span> {
+                String addedMonedaCode = monedaRepository.save(toMoneda(addMonedaRequest)).getCodigo();
+                singleSubscriber.onSuccess(addedMonedaCode);
+            }
+        });
+    }
+
+    <span class="hljs-function"><span class="hljs-keyword">private</span> Moneda <span class="hljs-title">toMoneda</span><span class="hljs-params">(AddMonedaRequest addMonedaRequest)</span> </span>{
+        Moneda moneda = <span class="hljs-keyword">new</span> Moneda();
+        BeanUtils.copyProperties(addMonedaRequest, moneda);
+        <span class="hljs-keyword">return</span> moneda;
+    }
+
+    <span class="hljs-meta">@Override</span>
+    <span class="hljs-function"><span class="hljs-keyword">public</span> Completable <span class="hljs-title">updateMoneda</span><span class="hljs-params">(UpdateMonedaRequest updateMonedaRequest)</span> </span>{
+        <span class="hljs-keyword">return</span> updateMonedaToRepository(updateMonedaRequest);
+    }
+
+    <span class="hljs-function"><span class="hljs-keyword">private</span> Completable <span class="hljs-title">updateMonedaToRepository</span><span class="hljs-params">(UpdateMonedaRequest updateMonedaRequest)</span> </span>{
+        <span class="hljs-keyword">return</span> Completable.create(completableSubscriber -&gt; {
+            Optional&lt;Moneda&gt; optionalMoneda = monedaRepository.findById(updateMonedaRequest.getCodigo());
+            <span class="hljs-keyword">if</span> (!optionalMoneda.isPresent())
+                completableSubscriber.onError(<span class="hljs-keyword">new</span> EntityNotFoundException());
+            <span class="hljs-keyword">else</span> {
+                Moneda moneda = optionalMoneda.get();
+                moneda.setNombre(updateMonedaRequest.getNombre());
+                moneda.setSimbolo(updateMonedaRequest.getSimbolo());
+                moneda.setTipocambio(updateMonedaRequest.getTipocambio());
+                moneda.setEstado(updateMonedaRequest.getEstado());
+                monedaRepository.save(moneda);
+                completableSubscriber.onComplete();
+            }
+        });
+    }
+
+    <span class="hljs-meta">@Override</span>
+    <span class="hljs-keyword">public</span> Single&lt;List&lt;MonedaResponse&gt;&gt; getAllMonedas(<span class="hljs-keyword">int</span> limit, <span class="hljs-keyword">int</span> page) {
+        <span class="hljs-keyword">return</span> findAllMonedasInRepository(limit, page)
+                .map(<span class="hljs-keyword">this</span>::toMonedaResponseList);
+    }
+
+    <span class="hljs-keyword">private</span> Single&lt;List&lt;Moneda&gt;&gt; findAllMonedasInRepository(<span class="hljs-keyword">int</span> limit, <span class="hljs-keyword">int</span> page) {
+        <span class="hljs-keyword">return</span> Single.create(singleSubscriber -&gt; {
+            List&lt;Moneda&gt; monedas = monedaRepository.findAll(PageRequest.of(page, limit)).getContent();
+            singleSubscriber.onSuccess(monedas);
+        });
+    }
+
+    <span class="hljs-function"><span class="hljs-keyword">private</span> List&lt;MonedaResponse&gt; <span class="hljs-title">toMonedaResponseList</span><span class="hljs-params">(List&lt;Moneda&gt; monedaList)</span> </span>{
+        <span class="hljs-keyword">return</span> monedaList
+                .stream()
+                .map(<span class="hljs-keyword">this</span>::toMonedaResponse)
+                .collect(Collectors.toList());
+    }
+
+    <span class="hljs-function"><span class="hljs-keyword">private</span> MonedaResponse <span class="hljs-title">toMonedaResponse</span><span class="hljs-params">(Moneda moneda)</span> </span>{
+        MonedaResponse monedaResponse = <span class="hljs-keyword">new</span> MonedaResponse();
+        BeanUtils.copyProperties(moneda, monedaResponse);
+        <span class="hljs-keyword">return</span> monedaResponse;
+    }
+
+    <span class="hljs-meta">@Override</span>
+    <span class="hljs-function"><span class="hljs-keyword">public</span> Single&lt;MonedaResponse&gt; <span class="hljs-title">getMonedaDetail</span><span class="hljs-params">(String codigo)</span> </span>{
+        <span class="hljs-keyword">return</span> findMonedaDetailInRepository(codigo);
+    }
+
+    <span class="hljs-function"><span class="hljs-keyword">private</span> Single&lt;MonedaResponse&gt; <span class="hljs-title">findMonedaDetailInRepository</span><span class="hljs-params">(String codigo)</span> </span>{
+        <span class="hljs-keyword">return</span> Single.create(singleSubscriber -&gt; {
+            Optional&lt;Moneda&gt; optionalMoneda = monedaRepository.findById(codigo);
+            <span class="hljs-keyword">if</span> (!optionalMoneda.isPresent())
+                singleSubscriber.onError(<span class="hljs-keyword">new</span> EntityNotFoundException());
+            <span class="hljs-keyword">else</span> {
+                MonedaResponse monedaResponse = toMonedaResponse(optionalMoneda.get());
+                singleSubscriber.onSuccess(monedaResponse);
+            }
+        });
+    }
+
+    <span class="hljs-meta">@Override</span>
+    <span class="hljs-function"><span class="hljs-keyword">public</span> Completable <span class="hljs-title">deleteMoneda</span><span class="hljs-params">(String codigo)</span> </span>{
+        <span class="hljs-keyword">return</span> deleteMonedaInRepository(codigo);
+    }
+
+    <span class="hljs-function"><span class="hljs-keyword">private</span> Completable <span class="hljs-title">deleteMonedaInRepository</span><span class="hljs-params">(String codigo)</span> </span>{
+        <span class="hljs-keyword">return</span> Completable.create(completableSubscriber -&gt; {
+            Optional&lt;Moneda&gt; optionalMoneda = monedaRepository.findById(codigo);
+            <span class="hljs-keyword">if</span> (!optionalMoneda.isPresent())
+                completableSubscriber.onError(<span class="hljs-keyword">new</span> EntityNotFoundException());
+            <span class="hljs-keyword">else</span> {
+                monedaRepository.delete(optionalMoneda.get());
+                completableSubscriber.onComplete();
+            }
+        });
+    }
+}
+
+</pre>
+        </td>
+      </tr>
+    
+  </tbody>
+</table>
+
+  </div>
+</body>
+</html>

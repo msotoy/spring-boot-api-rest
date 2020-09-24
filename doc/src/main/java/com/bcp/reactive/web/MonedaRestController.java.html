@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>MonedaRestController.java</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <link rel="stylesheet" media="all" href="../../../../../../../doc-style.css" />
+  <script src="../../../../../../../doc-filelist.js"></script>
+  <script>
+    var relativeDir = "../../../../../../../";
+    var thisFile = "src\\main\\java\\com\\bcp\\reactive\\web\\MonedaRestController.java";
+    var defaultSidebar = true;
+  </script>
+  <script src="../../../../../../../doc-script.js"></script>
+
+</head>
+<body>
+  <div id="sidebar_wrapper">
+    <div id="sidebar_switch">
+      <span class="tree">Files</span>
+      <span class="headings">Headings</span>
+    </div>
+    <div id="tree"></div>
+    <div id="headings">
+
+    </div>
+  </div>
+  <div id="sidebar-toggle"></div>
+  <div id="container">
+    <div class="background highlight"></div>
+<table cellpadding="0" cellspacing="0">
+  <tbody>
+    
+      <tr>
+        <td class="docs">
+          <h1>MonedaRestController.java</h1>
+        </td>
+        <td class="code highlight"></td>
+      </tr>
+    
+    
+      <tr>
+        <td class="docs">
+          <div class="pilwrap">
+  <a class="pilcrow" href="#section-1" id="section-1"></a>
+</div>
+
+        </td>
+        <td class="code highlight">
+          <pre class="java"><span class="hljs-keyword">package</span> com.bcp.reactive.web;
+
+<span class="hljs-keyword">import</span> io.reactivex.Single;
+<span class="hljs-keyword">import</span> io.reactivex.schedulers.Schedulers;
+<span class="hljs-keyword">import</span> org.springframework.beans.BeanUtils;
+<span class="hljs-keyword">import</span> org.springframework.beans.factory.annotation.Autowired;
+<span class="hljs-keyword">import</span> org.springframework.http.MediaType;
+<span class="hljs-keyword">import</span> org.springframework.http.ResponseEntity;
+<span class="hljs-keyword">import</span> org.springframework.web.bind.annotation.*;
+
+<span class="hljs-keyword">import</span> com.bcp.reactive.service.moneda.MonedaService;
+<span class="hljs-keyword">import</span> com.bcp.reactive.servicedto.request.AddMonedaRequest;
+<span class="hljs-keyword">import</span> com.bcp.reactive.servicedto.request.UpdateMonedaRequest;
+<span class="hljs-keyword">import</span> com.bcp.reactive.servicedto.response.MonedaResponse;
+<span class="hljs-keyword">import</span> com.bcp.reactive.webdto.request.UpdateMonedaWebRequest;
+<span class="hljs-keyword">import</span> com.bcp.reactive.webdto.response.BaseWebResponse;
+<span class="hljs-keyword">import</span> com.bcp.reactive.webdto.response.MonedaWebResponse;
+
+<span class="hljs-keyword">import</span> java.net.URI;
+<span class="hljs-keyword">import</span> java.util.List;
+<span class="hljs-keyword">import</span> java.util.stream.Collectors;
+
+<span class="hljs-meta">@RestController</span>
+<span class="hljs-meta">@RequestMapping</span>(value = <span class="hljs-string">"/api/moneda"</span>)
+<span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">MonedaRestController</span> </span>{
+
+    <span class="hljs-meta">@Autowired</span>
+    <span class="hljs-keyword">private</span> MonedaService monedaService;
+
+    <span class="hljs-meta">@PostMapping</span>(
+            consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE
+    ) <span class="hljs-keyword">public</span> Single&lt;ResponseEntity&lt;BaseWebResponse&gt;&gt; addMoneda(
+        <span class="hljs-meta">@RequestBody</span> AddMonedaRequest addMonedaRequest) {
+        <span class="hljs-keyword">return</span> monedaService.addMoneda(addMonedaRequest).subscribeOn(Schedulers.io()).map(
+            s -&gt; ResponseEntity.created(URI.create(<span class="hljs-string">"/api/moneda/"</span> + s))
+                .body(BaseWebResponse.successWithData(s)));
+    }
+
+    <span class="hljs-meta">@PutMapping</span>(
+            value = <span class="hljs-string">"/{codigo}"</span>,
+            consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    <span class="hljs-keyword">public</span> Single&lt;ResponseEntity&lt;BaseWebResponse&gt;&gt; updateMoneda(<span class="hljs-meta">@PathVariable</span>(value = <span class="hljs-string">"codigo"</span>) String codigo,
+                                                              <span class="hljs-meta">@RequestBody</span> UpdateMonedaWebRequest updateMonedaWebRequest) {
+        <span class="hljs-keyword">return</span> monedaService.updateMoneda(toUpdateMonedaRequest(codigo, updateMonedaWebRequest))
+                .subscribeOn(Schedulers.io())
+                .toSingle(() -&gt; ResponseEntity.ok(BaseWebResponse.successNoData()));
+    }
+
+    <span class="hljs-function"><span class="hljs-keyword">private</span> UpdateMonedaRequest <span class="hljs-title">toUpdateMonedaRequest</span><span class="hljs-params">(String codigo, UpdateMonedaWebRequest updateMonedaWebRequest)</span> </span>{
+        UpdateMonedaRequest updateMonedaRequest = <span class="hljs-keyword">new</span> UpdateMonedaRequest();
+        BeanUtils.copyProperties(updateMonedaWebRequest, updateMonedaRequest);
+        updateMonedaRequest.setCodigo(codigo);
+        <span class="hljs-keyword">return</span> updateMonedaRequest;
+    }
+
+    <span class="hljs-meta">@GetMapping</span>(
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    <span class="hljs-keyword">public</span> Single&lt;ResponseEntity&lt;BaseWebResponse&lt;List&lt;MonedaWebResponse&gt;&gt;&gt;&gt; getAllMonedas(<span class="hljs-meta">@RequestParam</span>(value = <span class="hljs-string">"limit"</span>, defaultValue = <span class="hljs-string">"50"</span>) <span class="hljs-keyword">int</span> limit,
+                                                                                      <span class="hljs-meta">@RequestParam</span>(value = <span class="hljs-string">"page"</span>, defaultValue = <span class="hljs-string">"0"</span>) <span class="hljs-keyword">int</span> page) {
+        <span class="hljs-keyword">return</span> monedaService.getAllMonedas(limit, page)
+                .subscribeOn(Schedulers.io())
+                .map(monedaResponses -&gt; ResponseEntity.ok(BaseWebResponse.successWithData(toMonedaWebResponseList(monedaResponses))));
+    }
+
+    <span class="hljs-function"><span class="hljs-keyword">private</span> List&lt;MonedaWebResponse&gt; <span class="hljs-title">toMonedaWebResponseList</span><span class="hljs-params">(List&lt;MonedaResponse&gt; monedaResponseList)</span> </span>{
+        <span class="hljs-keyword">return</span> monedaResponseList
+                .stream()
+                .map(<span class="hljs-keyword">this</span>::toMonedaWebResponse)
+                .collect(Collectors.toList());
+    }
+
+    <span class="hljs-function"><span class="hljs-keyword">private</span> MonedaWebResponse <span class="hljs-title">toMonedaWebResponse</span><span class="hljs-params">(MonedaResponse monedaResponse)</span> </span>{
+        MonedaWebResponse monedaWebResponse = <span class="hljs-keyword">new</span> MonedaWebResponse();
+        BeanUtils.copyProperties(monedaResponse, monedaWebResponse);
+        <span class="hljs-keyword">return</span> monedaWebResponse;
+    }
+
+    <span class="hljs-meta">@GetMapping</span>(
+            value = <span class="hljs-string">"/{codigo}"</span>,
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    <span class="hljs-keyword">public</span> Single&lt;ResponseEntity&lt;BaseWebResponse&lt;MonedaWebResponse&gt;&gt;&gt; getMonedaDetail(<span class="hljs-meta">@PathVariable</span>(value = <span class="hljs-string">"codigo"</span>) String codigo) {
+        <span class="hljs-keyword">return</span> monedaService.getMonedaDetail(codigo)
+                .subscribeOn(Schedulers.io())
+                .map(monedaResponse -&gt; ResponseEntity.ok(BaseWebResponse.successWithData(toMonedaWebResponse(monedaResponse))));
+    }
+
+    <span class="hljs-meta">@DeleteMapping</span>(
+            value = <span class="hljs-string">"/{codigo}"</span>,
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    <span class="hljs-keyword">public</span> Single&lt;ResponseEntity&lt;BaseWebResponse&gt;&gt; deleteMoneda(<span class="hljs-meta">@PathVariable</span>(value = <span class="hljs-string">"codigo"</span>) String codigo) {
+        <span class="hljs-keyword">return</span> monedaService.deleteMoneda(codigo)
+                .subscribeOn(Schedulers.io())
+                .toSingle(() -&gt; ResponseEntity.ok(BaseWebResponse.successNoData()));
+    }
+
+}
+
+</pre>
+        </td>
+      </tr>
+    
+  </tbody>
+</table>
+
+  </div>
+</body>
+</html>

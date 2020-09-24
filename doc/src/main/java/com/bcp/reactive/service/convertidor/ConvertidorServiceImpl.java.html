@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>ConvertidorServiceImpl.java</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <link rel="stylesheet" media="all" href="../../../../../../../../doc-style.css" />
+  <script src="../../../../../../../../doc-filelist.js"></script>
+  <script>
+    var relativeDir = "../../../../../../../../";
+    var thisFile = "src\\main\\java\\com\\bcp\\reactive\\service\\convertidor\\ConvertidorServiceImpl.java";
+    var defaultSidebar = true;
+  </script>
+  <script src="../../../../../../../../doc-script.js"></script>
+
+</head>
+<body>
+  <div id="sidebar_wrapper">
+    <div id="sidebar_switch">
+      <span class="tree">Files</span>
+      <span class="headings">Headings</span>
+    </div>
+    <div id="tree"></div>
+    <div id="headings">
+
+    </div>
+  </div>
+  <div id="sidebar-toggle"></div>
+  <div id="container">
+    <div class="background highlight"></div>
+<table cellpadding="0" cellspacing="0">
+  <tbody>
+    
+      <tr>
+        <td class="docs">
+          <h1>ConvertidorServiceImpl.java</h1>
+        </td>
+        <td class="code highlight"></td>
+      </tr>
+    
+    
+      <tr>
+        <td class="docs">
+          <div class="pilwrap">
+  <a class="pilcrow" href="#section-1" id="section-1"></a>
+</div>
+
+        </td>
+        <td class="code highlight">
+          <pre class="java"><span class="hljs-keyword">package</span> com.bcp.reactive.service.convertidor;
+
+<span class="hljs-keyword">import</span> io.reactivex.Single;
+<span class="hljs-keyword">import</span> org.springframework.beans.factory.annotation.Autowired;
+<span class="hljs-keyword">import</span> org.springframework.stereotype.Service;
+
+<span class="hljs-keyword">import</span> com.bcp.reactive.repository.MonedaRepository;
+<span class="hljs-keyword">import</span> com.bcp.reactive.servicedto.response.ConvertidorResponse;
+<span class="hljs-keyword">import</span> com.bcp.reactive.webdto.request.ConvertidorWebRequest;
+<span class="hljs-keyword">import</span> com.bcp.reactive.entity.Moneda;
+<span class="hljs-keyword">import</span> javax.persistence.EntityNotFoundException;
+<span class="hljs-keyword">import</span> java.util.Optional;
+
+<span class="hljs-meta">@Service</span>
+<span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">ConvertidorServiceImpl</span> <span class="hljs-keyword">implements</span> <span class="hljs-title">ConvertidorService</span> </span>{
+    
+    <span class="hljs-meta">@Autowired</span>
+    <span class="hljs-keyword">private</span> MonedaRepository monedaRepository;
+
+    <span class="hljs-meta">@Override</span>
+    <span class="hljs-function"><span class="hljs-keyword">public</span> Single&lt;ConvertidorResponse&gt; <span class="hljs-title">convertirMoneda</span><span class="hljs-params">(ConvertidorWebRequest convertidorWebResponse)</span> </span>{
+        <span class="hljs-keyword">return</span> findConvertidorDetailInRepository(convertidorWebResponse.getMonto(), convertidorWebResponse.getMonedaOrigen(), convertidorWebResponse.getMonedaDestino());
+    }
+
+    <span class="hljs-function"><span class="hljs-keyword">private</span> Single&lt;ConvertidorResponse&gt; <span class="hljs-title">findConvertidorDetailInRepository</span><span class="hljs-params">(<span class="hljs-keyword">double</span> monto, String monedaOrigen, String monedaDestino)</span> </span>{
+        <span class="hljs-keyword">return</span> Single.create(singleSubscriber -&gt; {
+            Optional&lt;Moneda&gt; optionalMonedaOrigen = monedaRepository.findById(monedaOrigen);
+            Optional&lt;Moneda&gt; optionalMonedaDestino = monedaRepository.findById(monedaDestino);
+            <span class="hljs-keyword">if</span> (!optionalMonedaOrigen.isPresent() || !optionalMonedaDestino.isPresent())
+                singleSubscriber.onError(<span class="hljs-keyword">new</span> EntityNotFoundException());
+            <span class="hljs-keyword">else</span> {
+            	<span class="hljs-keyword">double</span> tipoCambioOrigen = optionalMonedaOrigen.get().getTipocambio();
+            	<span class="hljs-keyword">double</span> tipoCambioDestino = optionalMonedaDestino.get().getTipocambio();
+            	
+            	<span class="hljs-keyword">double</span> tipoCambio = tipoCambioDestino / tipoCambioOrigen;
+            	<span class="hljs-keyword">double</span> montoConvertido = monto * tipoCambio;
+            	
+                ConvertidorResponse convertidorResponse = <span class="hljs-keyword">new</span> ConvertidorResponse();
+                convertidorResponse.setMontoOriginal(monto);
+                convertidorResponse.setMontoConvertido(montoConvertido);
+                convertidorResponse.setMonedaOrigen(monedaOrigen);
+                convertidorResponse.setMonedaDestino(monedaDestino);
+                convertidorResponse.setTipoCambio(tipoCambio);
+                
+                singleSubscriber.onSuccess(convertidorResponse);
+            }
+        });
+    }
+    
+}
+
+</pre>
+        </td>
+      </tr>
+    
+  </tbody>
+</table>
+
+  </div>
+</body>
+</html>

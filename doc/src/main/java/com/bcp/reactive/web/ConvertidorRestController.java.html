@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>ConvertidorRestController.java</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <link rel="stylesheet" media="all" href="../../../../../../../doc-style.css" />
+  <script src="../../../../../../../doc-filelist.js"></script>
+  <script>
+    var relativeDir = "../../../../../../../";
+    var thisFile = "src\\main\\java\\com\\bcp\\reactive\\web\\ConvertidorRestController.java";
+    var defaultSidebar = true;
+  </script>
+  <script src="../../../../../../../doc-script.js"></script>
+
+</head>
+<body>
+  <div id="sidebar_wrapper">
+    <div id="sidebar_switch">
+      <span class="tree">Files</span>
+      <span class="headings">Headings</span>
+    </div>
+    <div id="tree"></div>
+    <div id="headings">
+
+    </div>
+  </div>
+  <div id="sidebar-toggle"></div>
+  <div id="container">
+    <div class="background highlight"></div>
+<table cellpadding="0" cellspacing="0">
+  <tbody>
+    
+      <tr>
+        <td class="docs">
+          <h1>ConvertidorRestController.java</h1>
+        </td>
+        <td class="code highlight"></td>
+      </tr>
+    
+    
+      <tr>
+        <td class="docs">
+          <div class="pilwrap">
+  <a class="pilcrow" href="#section-1" id="section-1"></a>
+</div>
+
+        </td>
+        <td class="code highlight">
+          <pre class="java"><span class="hljs-keyword">package</span> com.bcp.reactive.web;
+
+<span class="hljs-keyword">import</span> io.reactivex.Single;
+<span class="hljs-keyword">import</span> io.reactivex.schedulers.Schedulers;
+<span class="hljs-keyword">import</span> org.springframework.beans.BeanUtils;
+<span class="hljs-keyword">import</span> org.springframework.beans.factory.annotation.Autowired;
+<span class="hljs-keyword">import</span> org.springframework.http.MediaType;
+<span class="hljs-keyword">import</span> org.springframework.http.ResponseEntity;
+<span class="hljs-keyword">import</span> org.springframework.web.bind.annotation.*;
+
+<span class="hljs-keyword">import</span> com.bcp.reactive.service.convertidor.ConvertidorService;
+<span class="hljs-keyword">import</span> com.bcp.reactive.servicedto.response.ConvertidorResponse;
+<span class="hljs-keyword">import</span> com.bcp.reactive.webdto.request.ConvertidorWebRequest;
+<span class="hljs-keyword">import</span> com.bcp.reactive.webdto.response.BaseWebResponse;
+<span class="hljs-keyword">import</span> com.bcp.reactive.webdto.response.ConvertidorWebResponse;
+
+<span class="hljs-meta">@RestController</span>
+<span class="hljs-meta">@RequestMapping</span>(value = <span class="hljs-string">"/api/convertidor"</span>)
+<span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">ConvertidorRestController</span> </span>{
+
+    <span class="hljs-meta">@Autowired</span>
+    <span class="hljs-keyword">private</span> ConvertidorService convertidorService;
+
+    <span class="hljs-meta">@GetMapping</span>(
+    		consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    <span class="hljs-keyword">public</span> Single&lt;ResponseEntity&lt;BaseWebResponse&lt;ConvertidorWebResponse&gt;&gt;&gt; ConvertirMoneda(
+    		<span class="hljs-meta">@RequestBody</span> ConvertidorWebRequest convertidorWebRequest) {
+        <span class="hljs-keyword">return</span> convertidorService.convertirMoneda(convertidorWebRequest)
+                .subscribeOn(Schedulers.io())
+                .map(convertidorResponse -&gt; ResponseEntity.ok(BaseWebResponse.successWithData(toConvertidorWebResponse(convertidorResponse))));
+    }
+
+    <span class="hljs-function"><span class="hljs-keyword">private</span> ConvertidorWebResponse <span class="hljs-title">toConvertidorWebResponse</span><span class="hljs-params">(ConvertidorResponse convertidorResponse)</span> </span>{
+        ConvertidorWebResponse convertidorWebResponse = <span class="hljs-keyword">new</span> ConvertidorWebResponse();
+        BeanUtils.copyProperties(convertidorResponse, convertidorWebResponse);
+        <span class="hljs-keyword">return</span> convertidorWebResponse;
+    }
+
+}
+
+</pre>
+        </td>
+      </tr>
+    
+  </tbody>
+</table>
+
+  </div>
+</body>
+</html>
